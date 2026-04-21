@@ -1,0 +1,41 @@
+<script>
+// Conectar al WebSocket
+const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/chat/general/'
+);
+
+chatSocket.onopen = function(e) {
+    console.log('✅ WebSocket conectado');
+};
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    console.log('Mensaje recibido:', data);
+    
+    // Mostrar mensaje en el chat
+    if (data.type === 'message') {
+        addMessage(data.username, data.message);
+    }
+};
+
+chatSocket.onclose = function(e) {
+    console.error('❌ WebSocket cerrado');
+};
+
+chatSocket.onerror = function(e) {
+    console.error('Error en WebSocket:', e);
+};
+
+// Enviar mensaje
+function sendMessage(message) {
+    chatSocket.send(JSON.stringify({
+        'message': message,
+        'username': 'Tu Nombre'
+    }));
+}
+
+function addMessage(username, message) {
+    const messagesDiv = document.getElementById('chat-messages');
+    messagesDiv.innerHTML += `<p><strong>${username}:</strong> ${message}</p>`;
+}
+</script>
